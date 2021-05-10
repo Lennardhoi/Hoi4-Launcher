@@ -18,8 +18,6 @@ using System.Windows.Forms;
 using System.Net.Http;
 using System.Timers;
 using Timer = System.Timers.Timer;
-//using UnityEngine;
-//using System.Collections;
 using Steamworks;
 namespace Hoi4_Launcher
 {
@@ -350,18 +348,20 @@ namespace Hoi4_Launcher
                             PublishedFileId_t r = (PublishedFileId_t)ulong.Parse(mod.remote_fileid);
                             Logger("Updated " + mod.displayName + " (" + mod.remote_fileid + ")");
                             //Logger(enabled_mods.remote_fileid); 
-                             bool ret = SteamUGC.DownloadItem(r, true);
+                            bool ret = SteamUGC.DownloadItem(r, true);
                         }
                 }
                 //uint nSubscriptions = SteamUGC.GetNumSubscribedItems();
                 // UInt64 r = Convert.ToUInt64(mod.remote_fileid);
                 //UInt64 m_PublishedFileId = Convert.ToUInt64(mod.remote_fileid);
-                
-
-
             }
         }
-    }
+
+		private void enable_debug_CheckedChanged(object sender, EventArgs e)
+		{
+            args += "--debug";
+		}
+	}
 }
     public static class ISynchronizeInvokeExtensions
     {
