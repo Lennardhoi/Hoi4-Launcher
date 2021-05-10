@@ -32,7 +32,7 @@ namespace Hoi4_Launcher
         private static dlcModel[] dis_dlc = null;
         private static int modsCount;
         private bool m_bInitialized;
-    
+        protected Callback<DownloadItemResult_t> m_DownloadItemResult;
         private static LHSettings gameSettings = new LHSettings();
         private string args;
 
@@ -350,7 +350,7 @@ namespace Hoi4_Launcher
                             PublishedFileId_t r = (PublishedFileId_t)ulong.Parse(mod.remote_fileid);
                             Logger("Updated " + mod.displayName + " (" + mod.remote_fileid + ")");
                             //Logger(enabled_mods.remote_fileid); 
-                            // bool ret = SteamUGC.DownloadItem(r, true);
+                             bool ret = SteamUGC.DownloadItem(r, true);
                         }
                 }
                 //uint nSubscriptions = SteamUGC.GetNumSubscribedItems();
