@@ -43,8 +43,8 @@
             this.textBox1 = new System.Windows.Forms.RichTextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.label_version = new System.Windows.Forms.ToolStripStatusLabel();
+            this.button1 = new System.Windows.Forms.Button();
             this.userControl11 = new ImgButton.UserControl1();
-            this.userControl12 = new ImgButton.UserControl1();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -200,6 +200,24 @@
             this.label_version.Size = new System.Drawing.Size(60, 17);
             this.label_version.Text = "Version:";
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.Transparent;
+            this.button1.BackgroundImage = global::Hoi4_Launcher.Properties.Resources.play;
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.Transparent;
+            this.button1.Location = new System.Drawing.Point(12, 504);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(411, 79);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "Update all enabled Mods";
+            this.button1.UseMnemonic = false;
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // userControl11
             // 
             this.userControl11._3rdParty = false;
@@ -213,29 +231,14 @@
             this.userControl11.Load += new System.EventHandler(this.userControl11_Load);
             this.userControl11.MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserControl11_Click);
             // 
-            // userControl12
-            // 
-            this.userControl12._3rdParty = false;
-            this.userControl12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.userControl12.BackColor = System.Drawing.Color.Transparent;
-            this.userControl12.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("userControl12.BackgroundImage")));
-            this.userControl12.Location = new System.Drawing.Point(42, 504);
-            this.userControl12.Name = "userControl12";
-            this.userControl12.label1.Text = "Update all Mods";
-            this.userControl12.label1.Location = new System.Drawing.Point(120, 24);
-            this.userControl12.Size = new System.Drawing.Size(411, 79);
-            this.userControl12.TabIndex = 5;
-            this.userControl12.Load += new System.EventHandler(this.userControl12_Load);
-            this.userControl12.MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserControl12_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(997, 625);
-            this.Controls.Add(this.userControl12);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.userControl11);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tabControl1);
@@ -270,9 +273,9 @@
         private System.Windows.Forms.RichTextBox textBox1;
         private System.Windows.Forms.CheckedListBox list_mods;
         private System.Windows.Forms.CheckedListBox list_dlc;
-        private ImgButton.UserControl1 userControl11;
         private System.Windows.Forms.ToolStripStatusLabel label_version;
-        private ImgButton.UserControl1 userControl12;
+        private System.Windows.Forms.Button button1;
+        private ImgButton.UserControl1 userControl11;
     }
 }
 

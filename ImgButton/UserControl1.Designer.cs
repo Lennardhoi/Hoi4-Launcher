@@ -1,6 +1,6 @@
 ﻿namespace ImgButton
 {
-    partial class UserControl1
+    partial class UserControl2
     {
         /// <summary>
         /// Required designer variable.

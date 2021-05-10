@@ -31,7 +31,8 @@ namespace Hoi4_Launcher
         private static string Hoi4_Mods = Path.Combine(Hoi4_Doc, "mod");
         private static dlcModel[] dis_dlc = null;
         private static int modsCount;
-
+        private bool m_bInitialized;
+    
         private static LHSettings gameSettings = new LHSettings();
         private string args;
 
@@ -118,6 +119,13 @@ namespace Hoi4_Launcher
 
         private void load() {
             //Load Mods
+            m_bInitialized = SteamAPI.Init();
+            if (!m_bInitialized)
+            {
+                Logger("[Steamworks.NET] SteamAPI_Init() failed. Refer to Valve's documentation or the comment above this line for more information." + this);
+
+                return;
+            }
             var items = load_items();
             var mods = load_mods_info();
             int enabled_mods = 0;
@@ -237,26 +245,10 @@ namespace Hoi4_Launcher
                 SerializeConfig(config);
                 Process.Start(@"hoi4.exe", "-debug");
                 Application.Exit();
+                SteamAPI.Shutdown();
             }
         }
-        private void UserControl12_Click(object sender, MouseEventArgs e)
-        {
-            Application.Exit();
-            var mods = load_mods_info();
-            
-            foreach (var mod in mods)
-            {
-                //uint nSubscriptions = SteamUGC.GetNumSubscribedItems();
-                // UInt64 r = Convert.ToUInt64(mod.remote_fileid);
-                //UInt64 m_PublishedFileId = Convert.ToUInt64(mod.remote_fileid);
-                PublishedFileId_t r = (PublishedFileId_t)ulong.Parse(mod.remote_fileid);
-                Logger(mod.remote_fileid);
-                bool ret = SteamUGC.DownloadItem(r, true);
-
-            }
-
-        }
-
+        
 
         private string removeBrackets(string text, string from, string to , bool tolast =true) {
             int pFrom = text.IndexOf(from) + from.Length;
@@ -277,7 +269,7 @@ namespace Hoi4_Launcher
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
-            Logger("Application arguments: " +( String.IsNullOrEmpty(args) ? "null" : args));
+            Logger("Modified Version of Xferno2s launcher https://github.com/Xferno2/Hearts-Of-Iron-IV-Launcher");
            
 
             this.DoubleBuffered = true;
@@ -341,6 +333,33 @@ namespace Hoi4_Launcher
         private void userControl11_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var mods = load_mods_info();
+            var enabled_mods = new List<string>();
+            
+            foreach (var mod in mods)
+            {
+                if (list_mods.CheckedItems.Contains(mod.displayName))
+                {
+                    if (mod.displayName != null)
+                        if (!string.IsNullOrEmpty(mod.remote_fileid))
+                        {
+                            PublishedFileId_t r = (PublishedFileId_t)ulong.Parse(mod.remote_fileid);
+                            Logger("Updated " + mod.displayName + " (" + mod.remote_fileid + ")");
+                            //Logger(enabled_mods.remote_fileid); 
+                            // bool ret = SteamUGC.DownloadItem(r, true);
+                        }
+                }
+                //uint nSubscriptions = SteamUGC.GetNumSubscribedItems();
+                // UInt64 r = Convert.ToUInt64(mod.remote_fileid);
+                //UInt64 m_PublishedFileId = Convert.ToUInt64(mod.remote_fileid);
+                
+
+
+            }
         }
     }
 }

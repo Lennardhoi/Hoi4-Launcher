@@ -4,11 +4,11 @@ using System.Windows.Forms;
 
 namespace ImgButton
 {
-    public partial class UserControl1 : UserControl
+    public partial class UserControl2 : UserControl
     {
         [Category("Custom")]
         [Browsable(true)]
-        public UserControl1()
+        public UserControl2()
         {
             InitializeComponent();
         }
