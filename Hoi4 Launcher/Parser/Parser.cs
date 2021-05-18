@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hoi4_Launcher.Parser
 {
-    class Parser
+    internal class Parser
     {
         private string removeBrackets(string text, string from, string to, bool tolast = true)
         {
@@ -24,7 +20,7 @@ namespace Hoi4_Launcher.Parser
             {
                 return text.Substring(pFrom, pTo - pFrom);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "";
             }
@@ -45,7 +41,7 @@ namespace Hoi4_Launcher.Parser
             {
                 return text.Substring(pFrom, pTo - pFrom);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "";
             }

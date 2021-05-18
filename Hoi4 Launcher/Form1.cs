@@ -1,46 +1,37 @@
 ﻿using Hoi4_Launcher.Model;
 using Hoi4_Launcher.Utility;
-using Hoi4_Launcher.Parser;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Net.Http;
 using System.Timers;
+using System.Windows.Forms;
 using Timer = System.Timers.Timer;
-using Steamworks;
 namespace Hoi4_Launcher
 {
     public partial class Form1 : Form
     {
-        private static string ParadoxFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Paradox Interactive");
-        private static string Hoi4_Doc = Path.Combine(ParadoxFolder, "Hearts of Iron IV");
-        private static string Hoi4_Enb_Mods = Path.Combine(Hoi4_Doc, "dlc_load.json");
-        private static string Hoi4_Mods = Path.Combine(Hoi4_Doc, "mod");
+        private static readonly string ParadoxFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Paradox Interactive");
+        private static readonly string Hoi4_Doc = Path.Combine(ParadoxFolder, "Hearts of Iron IV");
+        private static readonly string Hoi4_Enb_Mods = Path.Combine(Hoi4_Doc, "dlc_load.json");
+        private static readonly string Hoi4_Mods = Path.Combine(Hoi4_Doc, "mod");
         private static dlcModel[] dis_dlc = null;
         private static int modsCount;
         private bool m_bInitialized;
         protected Callback<DownloadItemResult_t> m_DownloadItemResult;
         private static LHSettings gameSettings = new LHSettings();
         private string args;
-
-        Timer updateUI = new Timer(100);
-        static launchSettings data = new launchSettings();
+        private readonly Timer updateUI = new Timer(100);
+        private static readonly launchSettings data = new launchSettings();
         public Form1(string[] args)
         {
-            foreach (var arg in args)
+            foreach (string arg in args)
             {
-                this.args += arg + " "; 
+                this.args += arg + " ";
             }
             InitializeComponent();
         }
@@ -54,31 +45,38 @@ namespace Hoi4_Launcher
             return obj;
         }
 
-        public List<newModInfo> load_mods_info() {
+        public List<newModInfo> load_mods_info()
+        {
             string[] stringSeparators = new string[] { "\n\t" };
             List<newModInfo> mods = new List<newModInfo>();
             DirectoryInfo d = new DirectoryInfo(Hoi4_Mods);
             FileInfo[] Files = d.GetFiles("*.mod");
             foreach (FileInfo file in Files)
             {
-                var mod = new newModInfo();
-                mod.gameRegestryMod = "mod/" + file.Name;
+                newModInfo mod = new newModInfo
+                {
+                    gameRegestryMod = "mod/" + file.Name
+                };
                 //if (mod.gameRegestryMod == "mod/ugc_1368243403.mod")
                 //{
                 //    Debugger.Break();
                 //}
-                var modFiles = File.ReadAllLines(file.FullName);
-                var modFileWhole = File.ReadAllText(file.FullName);
-                foreach (var modFile in modFiles) {
-                    if (modFile.Contains("name=")) {
-						if (modFileWhole.Contains("workshop")) {
-							mod.displayName = modFile.Split('=')[1].Replace("\"", "");
-						}
-						else  {
-							mod.displayName = modFile.Split('=')[1].Replace("\"", "");
+                string[] modFiles = File.ReadAllLines(file.FullName);
+                string modFileWhole = File.ReadAllText(file.FullName);
+                foreach (string modFile in modFiles)
+                {
+                    if (modFile.Contains("name="))
+                    {
+                        if (modFileWhole.Contains("workshop"))
+                        {
+                            mod.displayName = modFile.Split('=')[1].Replace("\"", "");
+                        }
+                        else
+                        {
+                            mod.displayName = modFile.Split('=')[1].Replace("\"", "");
                             string v = mod.displayName + "[LOCAL]";
                             mod.displayName = v;
-						}
+                        }
                     }
                     if (modFile.Contains("supported_version="))
                     {
@@ -91,20 +89,26 @@ namespace Hoi4_Launcher
                     if (modFile.Contains("tags={"))
                     {
                         List<string> tagsList = new List<string>();
-                        var tagsNotFormated = removeBrackets(modFileWhole, "tags={", "}",false);
-                        var tagsFormated = tagsNotFormated.Split(stringSeparators, StringSplitOptions.None);
-                        foreach (var tag in tagsFormated) {
+                        string tagsNotFormated = removeBrackets(modFileWhole, "tags={", "}", false);
+                        string[] tagsFormated = tagsNotFormated.Split(stringSeparators, StringSplitOptions.None);
+                        foreach (string tag in tagsFormated)
+                        {
                             if (tag != "")
-                            { var currentTag = removeBrackets(tag, "\"", "\"");
+                            {
+                                string currentTag = removeBrackets(tag, "\"", "\"");
                                 tagsList.Add(currentTag);
                                 bool isItemInList = false;
-                                foreach (var listItem in categoriesBox.Items) {
-                                    if (listItem.ToString().ToLower() == currentTag.ToLower()) {
+                                foreach (object listItem in categoriesBox.Items)
+                                {
+                                    if (listItem.ToString().ToLower() == currentTag.ToLower())
+                                    {
                                         isItemInList = true;
                                     }
                                 }
-                                if(!isItemInList)
+                                if (!isItemInList)
+                                {
                                     categoriesBox.Items.Add(currentTag);
+                                }
                             }
                         }
                         mod.tags = tagsList;
@@ -115,7 +119,8 @@ namespace Hoi4_Launcher
             return mods;
         }
 
-        private void load() {
+        private void load()
+        {
             //Load Mods
             m_bInitialized = SteamAPI.Init();
             if (!m_bInitialized)
@@ -124,10 +129,10 @@ namespace Hoi4_Launcher
 
                 return;
             }
-            var items = load_items();
-            var mods = load_mods_info();
+            launchSettings items = load_items();
+            List<newModInfo> mods = load_mods_info();
             int enabled_mods = 0;
-            foreach (var mod in mods)
+            foreach (newModInfo mod in mods)
             {
                 bool enabled = false;
                 if (items.enabled_mods.Contains(mod.gameRegestryMod)) { enabled = true; enabled_mods++; }
@@ -137,10 +142,11 @@ namespace Hoi4_Launcher
             updateModsCount(enabled_mods, modsCount);
 
             //Load DLC
-            foreach (var dlc in dis_dlc) {
+            foreach (dlcModel dlc in dis_dlc)
+            {
                 bool enabled = true;
                 if (items.disabled_dlcs.Contains(dlc.path)) { enabled = false; }
-                list_dlc.Items.Add(dlc.name,enabled);
+                list_dlc.Items.Add(dlc.name, enabled);
             }
             //Load LHSetthings
             string data = File.ReadAllText(@"launcher-settings.json");
@@ -150,35 +156,39 @@ namespace Hoi4_Launcher
 
         public void SerializeConfig(object x)
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            settings.TypeNameHandling = TypeNameHandling.Auto;
-            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
 
             File.WriteAllText(Hoi4_Enb_Mods, JsonConvert.SerializeObject(x, Formatting.Indented, settings));
         }
 
-        public dlcModel[] GetDLCs() {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "dlc");
+        public dlcModel[] GetDLCs()
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "dlc");
             List<dlcModel> dlcs = new List<dlcModel>();
-                foreach (var dir in Directory.GetDirectories(path)) {
+            foreach (string dir in Directory.GetDirectories(path))
+            {
                 try
                 {
                     DirectoryInfo dInfo = new DirectoryInfo(dir);
-                    var dlcFullPath = dInfo.GetFilesByExtensions(".dlc").First().FullName;
-                    var dlc = new dlcModel();
-                    var x = File.ReadLines(dlcFullPath);
+                    string dlcFullPath = dInfo.GetFilesByExtensions(".dlc").First().FullName;
+                    dlcModel dlc = new dlcModel();
+                    IEnumerable<string> x = File.ReadLines(dlcFullPath);
                     dlc.name = x.First().Split('"')[1].Replace('"', ' ');
                     dlc.path = x.ElementAt(1).Split('"')[1].Replace('"', ' ').Split('.').First() + ".dlc";
-                    var party = x.ElementAt(x.Count() - 2).Split('=')[1].Replace(" ", "");
-                    if ( party == "yes")
+                    string party = x.ElementAt(x.Count() - 2).Split('=')[1].Replace(" ", "");
+                    if (party == "yes")
                     { dlc._3rdparty = true; button2.BackgroundImage = Properties.Resources.play3rd; }
                     else { dlc._3rdparty = false; button2.BackgroundImage = Properties.Resources.play; }
                     dlcs.Add(dlc);
                 }
-            catch (Exception ex)
-            {
+                catch (Exception)
+                {
+                }
             }
-        }
             return dlcs.ToArray();
         }
 
@@ -186,28 +196,30 @@ namespace Hoi4_Launcher
         {
             if (e.Button == MouseButtons.Left)
             {
-                var mods = load_mods_info();
-                var enabled_mods = new List<string>();
-                foreach (var mod in mods)
+                List<newModInfo> mods = load_mods_info();
+                List<string> enabled_mods = new List<string>();
+                foreach (newModInfo mod in mods)
                 {
                     if (list_mods.CheckedItems.Contains(mod.displayName))
                     {
                         if (mod.displayName != null)
+                        {
                             enabled_mods.Add(mod.gameRegestryMod);
+                        }
                     }
                 }
-                var disabled_dlc = new List<string>();
-                foreach (var dlc in list_dlc.Items)
+                List<string> disabled_dlc = new List<string>();
+                foreach (object dlc in list_dlc.Items)
                 {
                     if (!list_dlc.CheckedItems.Contains(dlc))
                     {
-                        foreach (var disdlc in dis_dlc)
+                        foreach (dlcModel disdlc in dis_dlc)
                         {
                             if (disdlc.name == dlc.ToString()) { disabled_dlc.Add(disdlc.path); }
                         }
                     }
                 }
-                var config = load_items();
+                launchSettings config = load_items();
                 config.enabled_mods = enabled_mods;
                 config.disabled_dlcs = disabled_dlc;
                 SerializeConfig(config);
@@ -216,28 +228,30 @@ namespace Hoi4_Launcher
             }
             if (e.Button == MouseButtons.Right)
             {
-                var mods = load_mods_info();
-                var enabled_mods = new List<string>();
-                foreach (var mod in mods)
+                List<newModInfo> mods = load_mods_info();
+                List<string> enabled_mods = new List<string>();
+                foreach (newModInfo mod in mods)
                 {
                     if (list_mods.CheckedItems.Contains(mod.displayName))
                     {
                         if (mod.displayName != null)
+                        {
                             enabled_mods.Add(mod.gameRegestryMod);
+                        }
                     }
                 }
-                var disabled_dlc = new List<string>();
-                foreach (var dlc in list_dlc.Items)
+                List<string> disabled_dlc = new List<string>();
+                foreach (object dlc in list_dlc.Items)
                 {
                     if (!list_dlc.CheckedItems.Contains(dlc))
                     {
-                        foreach (var disdlc in dis_dlc)
+                        foreach (dlcModel disdlc in dis_dlc)
                         {
                             if (disdlc.name == dlc.ToString()) { disabled_dlc.Add(disdlc.path); }
                         }
                     }
                 }
-                var config = load_items();
+                launchSettings config = load_items();
                 config.enabled_mods = enabled_mods;
                 config.disabled_dlcs = disabled_dlc;
                 SerializeConfig(config);
@@ -246,21 +260,26 @@ namespace Hoi4_Launcher
                 SteamAPI.Shutdown();
             }
         }
-        
 
-        private string removeBrackets(string text, string from, string to , bool tolast =true) {
+
+        private string removeBrackets(string text, string from, string to, bool tolast = true)
+        {
             int pFrom = text.IndexOf(from) + from.Length;
             int pTo = 0;
             if (tolast)
             {
                 pTo = text.LastIndexOf(to);
             }
-            else {
+            else
+            {
                 pTo = text.IndexOf(to);
             }
-            try {
+            try
+            {
                 return text.Substring(pFrom, pTo - pFrom);
-            } catch (Exception ex) {
+            }
+            catch (Exception)
+            {
                 return "";
             }
         }
@@ -268,9 +287,9 @@ namespace Hoi4_Launcher
         private void Form1_Load_1(object sender, EventArgs e)
         {
             Logger("Modified Version of Xferno2s launcher https://github.com/Xferno2/Hearts-Of-Iron-IV-Launcher");
-           
 
-            this.DoubleBuffered = true;
+
+            DoubleBuffered = true;
             Utility.Utility.enableDoubleBuff(tabControl1);
             Utility.Utility.enableDoubleBuff(tabPage1);
             dis_dlc = GetDLCs();
@@ -285,14 +304,15 @@ namespace Hoi4_Launcher
             {
                 this.InvokeEx(x => updateUIinvokable());
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
         }
 
-        private void updateModsCount(int count, int maxCount) {
+        private void updateModsCount(int count, int maxCount)
+        {
             label_mods.Text = "Mods: " + count + "/" + maxCount;
         }
 
-     private void updateUIinvokable()
+        private void updateUIinvokable()
         {
             if (tabControl1.SelectedTab == tabPage3)
             {
@@ -305,23 +325,23 @@ namespace Hoi4_Launcher
         }
         private void checkFor3rdParty()
         {
-            bool is3rdParty = false;
-            foreach (var dlc in dis_dlc)
+            foreach (dlcModel dlc in dis_dlc)
             {
                 if (dlc._3rdparty && list_dlc.CheckedItems.Contains(dlc.name))
                 {
-                    is3rdParty = true;
                     button2.BackgroundImage = global::Hoi4_Launcher.Properties.Resources.play3rd;
                     break;
                 }
                 else
-                    is3rdParty = false;
+                {
+                }
+
                 button2.BackgroundImage = global::Hoi4_Launcher.Properties.Resources.play;
             }
         }
         public void Logger(string log)
         {
-            this.textBox1.InvokeEx(tx => tx.Text += "[" + DateTime.Now + "] " + log + System.Environment.NewLine);
+            textBox1.InvokeEx(tx => tx.Text += "[" + DateTime.Now + "] " + log + System.Environment.NewLine);
         }
 
         private void userControl12_Load(object sender, EventArgs e)
@@ -336,14 +356,15 @@ namespace Hoi4_Launcher
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var mods = load_mods_info();
-            var enabled_mods = new List<string>();
-            
-            foreach (var mod in mods)
+            List<newModInfo> mods = load_mods_info();
+            List<string> enabled_mods = new List<string>();
+
+            foreach (newModInfo mod in mods)
             {
                 if (list_mods.CheckedItems.Contains(mod.displayName))
                 {
                     if (mod.displayName != null)
+                    {
                         if (!string.IsNullOrEmpty(mod.remote_fileid))
                         {
                             PublishedFileId_t r = (PublishedFileId_t)ulong.Parse(mod.remote_fileid);
@@ -351,6 +372,7 @@ namespace Hoi4_Launcher
                             //Logger(enabled_mods.remote_fileid); 
                             bool ret = SteamUGC.DownloadItem(r, true);
                         }
+                    }
                 }
                 //uint nSubscriptions = SteamUGC.GetNumSubscribedItems();
                 // UInt64 r = Convert.ToUInt64(mod.remote_fileid);
@@ -358,35 +380,37 @@ namespace Hoi4_Launcher
             }
         }
 
-		private void enable_debug_CheckedChanged(object sender, EventArgs e)
-		{
+        private void enable_debug_CheckedChanged(object sender, EventArgs e)
+        {
             args += "--debug";
-		}
+        }
 
         private void button2_click(object sender, EventArgs e)
         {
-            var mods = load_mods_info();
-            var enabled_mods = new List<string>();
-            foreach (var mod in mods)
+            List<newModInfo> mods = load_mods_info();
+            List<string> enabled_mods = new List<string>();
+            foreach (newModInfo mod in mods)
             {
                 if (list_mods.CheckedItems.Contains(mod.displayName))
                 {
                     if (mod.displayName != null)
+                    {
                         enabled_mods.Add(mod.gameRegestryMod);
+                    }
                 }
             }
-            var disabled_dlc = new List<string>();
-            foreach (var dlc in list_dlc.Items)
+            List<string> disabled_dlc = new List<string>();
+            foreach (object dlc in list_dlc.Items)
             {
                 if (!list_dlc.CheckedItems.Contains(dlc))
                 {
-                    foreach (var disdlc in dis_dlc)
+                    foreach (dlcModel disdlc in dis_dlc)
                     {
                         if (disdlc.name == dlc.ToString()) { disabled_dlc.Add(disdlc.path); }
                     }
                 }
             }
-            var config = load_items();
+            launchSettings config = load_items();
             config.enabled_mods = enabled_mods;
             config.disabled_dlcs = disabled_dlc;
             SerializeConfig(config);
@@ -395,17 +419,17 @@ namespace Hoi4_Launcher
         }
     }
 }
-    public static class ISynchronizeInvokeExtensions
+public static class ISynchronizeInvokeExtensions
+{
+    public static void InvokeEx<T>(this T @this, Action<T> action) where T : ISynchronizeInvoke
     {
-        public static void InvokeEx<T>(this T @this, Action<T> action) where T : ISynchronizeInvoke
+        if (@this.InvokeRequired)
         {
-            if (@this.InvokeRequired)
-            {
-                @this.Invoke(action, new object[] { @this });
-            }
-            else
-            {
-                action(@this);
-            }
+            @this.Invoke(action, new object[] { @this });
+        }
+        else
+        {
+            action(@this);
         }
     }
+}
