@@ -50,6 +50,16 @@
   <PropertyGroup>
     <ApplicationIcon>hoi4.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>helloworld123.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -77,9 +87,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImgButton\UserControl1.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Model\dlcModel.cs" />
     <Compile Include="Model\itemPrew.cs" />
     <Compile Include="Model\launchSettings.cs" />
@@ -104,6 +111,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="helloworld123.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -119,17 +127,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImgButton\ImgButton.csproj">
-      <Project>{E17D7328-DAB5-4044-9D55-F4C77A0BF4D8}</Project>
-      <Name>ImgButton</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="hoi4.ico" />
     <Content Include="Resources\3rdparty.png" />
     <Content Include="Resources\background.png" />
     <Content Include="Resources\button.png" />
     <Content Include="Resources\hoi4.ico" />
+    <None Include="Resources\play3rd.png" />
     <Content Include="steam_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

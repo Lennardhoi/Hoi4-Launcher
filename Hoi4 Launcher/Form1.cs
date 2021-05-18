@@ -171,8 +171,8 @@ namespace Hoi4_Launcher
                     dlc.path = x.ElementAt(1).Split('"')[1].Replace('"', ' ').Split('.').First() + ".dlc";
                     var party = x.ElementAt(x.Count() - 2).Split('=')[1].Replace(" ", "");
                     if ( party == "yes")
-                    { dlc._3rdparty = true; userControl11._3rdParty = true; }
-                    else { dlc._3rdparty = false; }
+                    { dlc._3rdparty = true; button2.BackgroundImage = Properties.Resources.play3rd; }
+                    else { dlc._3rdparty = false; button2.BackgroundImage = Properties.Resources.play; }
                     dlcs.Add(dlc);
                 }
             catch (Exception ex)
@@ -311,12 +311,13 @@ namespace Hoi4_Launcher
                 if (dlc._3rdparty && list_dlc.CheckedItems.Contains(dlc.name))
                 {
                     is3rdParty = true;
+                    button2.BackgroundImage = global::Hoi4_Launcher.Properties.Resources.play3rd;
                     break;
                 }
                 else
                     is3rdParty = false;
+                button2.BackgroundImage = global::Hoi4_Launcher.Properties.Resources.play;
             }
-            userControl11._3rdParty = is3rdParty;
         }
         public void Logger(string log)
         {
@@ -361,7 +362,38 @@ namespace Hoi4_Launcher
 		{
             args += "--debug";
 		}
-	}
+
+        private void button2_click(object sender, EventArgs e)
+        {
+            var mods = load_mods_info();
+            var enabled_mods = new List<string>();
+            foreach (var mod in mods)
+            {
+                if (list_mods.CheckedItems.Contains(mod.displayName))
+                {
+                    if (mod.displayName != null)
+                        enabled_mods.Add(mod.gameRegestryMod);
+                }
+            }
+            var disabled_dlc = new List<string>();
+            foreach (var dlc in list_dlc.Items)
+            {
+                if (!list_dlc.CheckedItems.Contains(dlc))
+                {
+                    foreach (var disdlc in dis_dlc)
+                    {
+                        if (disdlc.name == dlc.ToString()) { disabled_dlc.Add(disdlc.path); }
+                    }
+                }
+            }
+            var config = load_items();
+            config.enabled_mods = enabled_mods;
+            config.disabled_dlcs = disabled_dlc;
+            SerializeConfig(config);
+            Process.Start(@"hoi4.exe", args);
+            Application.Exit();
+        }
+    }
 }
     public static class ISynchronizeInvokeExtensions
     {
