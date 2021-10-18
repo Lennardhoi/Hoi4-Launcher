@@ -13,7 +13,6 @@ using System.Windows.Forms;
 using Timer = System.Timers.Timer;
 namespace Hoi4_Launcher
 {
-    
     public partial class Form1 : Form
     {
         private static readonly string ParadoxFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Paradox Interactive");
@@ -30,33 +29,7 @@ namespace Hoi4_Launcher
         private readonly Timer updateUI = new Timer(100);
         private static readonly launchSettings data = new launchSettings();
 
-        static class Global
-        {
-            private static int _crashdata = 0;
-            private static int _debug = 0;
-            private static int _binary = 0;
-            private static int _debugsaves = 0;
-            public static int crashdata
-            {
-                get { return _crashdata; }
-                set { _crashdata = value; }
-            }
-            public static int randomlog
-            {
-                get { return _binary; }
-                set { _binary = value; }
-            }
-            public static int debugsaves
-            {
-                get { return _debugsaves; }
-                set { _debugsaves = value; }
-            }
-            public static int debug
-            {
-                get { return _debug; }
-                set { _debug = value; }
-            }
-        }
+
         public Form1(string[] args)
         {
             foreach (string arg in args)
@@ -65,7 +38,7 @@ namespace Hoi4_Launcher
             }
             InitializeComponent();
         }
-       
+
         public launchSettings load_items()
         {
             launchSettings obj;
@@ -160,50 +133,20 @@ namespace Hoi4_Launcher
 
                 return;
             }
-            launchSettings items = load_items();
-            List<newModInfo> mods = load_mods_info();
+            
+            
             int enabled_mods = 0;
+            List<newModInfo> mods = new load_mods_info();
+            launchSettings items = new load_items();
             foreach (newModInfo mod in mods)
             {
                 bool enabled = false;
                 if (items.enabled_mods.Contains(mod.gameRegestryMod)) { enabled = true; enabled_mods++; }
                 list_mods.Items.Add(mod.displayName, enabled);
             }
-
-           
-            if (items.my_launchersettings != null &&items.my_launchersettings.Count == 4 )
-            {
-                List<int> integers = items.my_launchersettings.ConvertAll(s => int.Parse(s));
-                Global.debug = integers[0];
-                Global.crashdata = integers[1];
-                Global.randomlog = integers[2];
-                Global.debugsaves = integers[3];
-                if (Global.debug ==1)
-                {
-                    enable_debug.Checked = true;
-                }
-                if (Global.crashdata == 1)
-                {
-                    enable_crashdatalog.Checked = true;
-                }
-                if (Global.randomlog == 1)
-                {
-                    enable_random_log.Checked = true;
-                }
-                if (Global.debugsaves > 0)
-                {
-                    debugsaves.Value = Global.debugsaves;
-                }
-            }
-            else
-            {
-                Global.debug = 0;
-                Global.crashdata = 0;
-                Global.randomlog = 0;
-                Global.debugsaves = 0;
-            }
             modsCount = mods.Count;
             updateModsCount(enabled_mods, modsCount);
+            //CheckedlistBox list_mods = list_mods.Items;
 
             //Load DLC
             foreach (dlcModel dlc in dis_dlc)
@@ -256,7 +199,74 @@ namespace Hoi4_Launcher
             return dlcs.ToArray();
         }
 
-       
+        private void UserControl11_Click(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                List<newModInfo> mods = load_mods_info();
+                List<string> enabled_mods = new List<string>();
+                foreach (newModInfo mod in mods)
+                {
+                    if (list_mods.CheckedItems.Contains(mod.displayName))
+                    {
+                        if (mod.displayName != null)
+                        {
+                            enabled_mods.Add(mod.gameRegestryMod);
+                        }
+                    }
+                }
+                List<string> disabled_dlc = new List<string>();
+                foreach (object dlc in list_dlc.Items)
+                {
+                    if (!list_dlc.CheckedItems.Contains(dlc))
+                    {
+                        foreach (dlcModel disdlc in dis_dlc)
+                        {
+                            if (disdlc.name == dlc.ToString()) { disabled_dlc.Add(disdlc.path); }
+                        }
+                    }
+                }
+                launchSettings config = load_items();
+                config.enabled_mods = enabled_mods;
+                config.disabled_dlcs = disabled_dlc;
+                SerializeConfig(config);
+                Process.Start(@"hoi4.exe", args);
+                Application.Exit();
+            }
+            if (e.Button == MouseButtons.Right)
+            {
+                List<newModInfo> mods = load_mods_info();
+                List<string> enabled_mods = new List<string>();
+                foreach (newModInfo mod in mods)
+                {
+                    if (list_mods.CheckedItems.Contains(mod.displayName))
+                    {
+                        if (mod.displayName != null)
+                        {
+                            enabled_mods.Add(mod.gameRegestryMod);
+                        }
+                    }
+                }
+                List<string> disabled_dlc = new List<string>();
+                foreach (object dlc in list_dlc.Items)
+                {
+                    if (!list_dlc.CheckedItems.Contains(dlc))
+                    {
+                        foreach (dlcModel disdlc in dis_dlc)
+                        {
+                            if (disdlc.name == dlc.ToString()) { disabled_dlc.Add(disdlc.path); }
+                        }
+                    }
+                }
+                launchSettings config = load_items();
+                config.enabled_mods = enabled_mods;
+                config.disabled_dlcs = disabled_dlc;
+                SerializeConfig(config);
+                Process.Start(@"hoi4.exe", "-debug");
+                Application.Exit();
+                SteamAPI.Shutdown();
+            }
+        }
 
 
         private string removeBrackets(string text, string from, string to, bool tolast = true)
@@ -373,7 +383,7 @@ namespace Hoi4_Launcher
                                 Logger(mod.remote_fileid + "update is needed" + unItemState);
                                 //bool ret = SteamUGC.DownloadItem(r, true);
                             }
-                            else if (unItemState < 7)
+                            else if(unItemState < 7)
                             {
                                 Logger(mod.displayName + " is up to date " + unItemState);
                             }
@@ -385,49 +395,29 @@ namespace Hoi4_Launcher
                 //UInt64 m_PublishedFileId = Convert.ToUInt64(mod.remote_fileid);
             }
         }
-        
+
         private void enable_debug_CheckedChanged(object sender, EventArgs e)
         {
-            if (Global.debug == 1)
+           
+            if (args.Contains("--debug"))
             {
-                Global.debug = 0;
+                args.Replace("--debug", "");
             }
             else
             {
-                Global.debug = 1;
+                args += "--debug";
             }
         }
-
         
         private void enable_crashdatalog_CheckedChanged(object sender, EventArgs e)
         {
-            if (Global.crashdata ==1)
+            if (args.Contains("--crash_data_log"))
             {
-                Global.crashdata = 0;
+                args.Replace("--crash_data_log", "");
             }
-            else
-            {
-                Global.crashdata = 1;
+            else { args += "--crash_data_log";
             }
-
-        }
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-            Global.debugsaves = ((int)debugsaves.Value);
-            
-            
-        }
-
-        private void enable_random_log_CheckedChanged(object sender, EventArgs e)
-        {
-            if (Global.randomlog == 1)
-            {
-                Global.randomlog = 0;
-            }
-            else
-            {
-                Global.randomlog = 1;
-            }
+           
         }
         private void button2_click(object sender, EventArgs e)
         {
@@ -457,34 +447,7 @@ namespace Hoi4_Launcher
             launchSettings config = load_items();
             config.enabled_mods = enabled_mods;
             config.disabled_dlcs = disabled_dlc;
-            var numbers2 = new List<int>() { Global.debug, Global.crashdata, Global.randomlog,Global.debugsaves };
-            List<string> l2 = numbers2.ConvertAll<string>(delegate(int i) { return i.ToString(); });
-            List<int> myStringList = l2.Select(s => int.Parse(s)).ToList();
-            config.my_launchersettings = l2;
             SerializeConfig(config);
-            if(Global.crashdata==1)
-            {
-                args = "--crash_data_log";
-
-            }
-            if (Global.debug == 1)
-            {
-
-                args += "--debug";
-
-            }
-            if (Global.debugsaves>0)
-            {
-
-                args += "--autosave_count="+ Global.debugsaves;
-
-            }
-            if (Global.randomlog > 0)
-            {
-
-                args += "--light_random_log";
-
-            }
             Process.Start(@"hoi4.exe", args);
             Application.Exit();
         }
@@ -492,7 +455,7 @@ namespace Hoi4_Launcher
         private void unselect_mods(object sender, EventArgs e)
         {
             while (list_mods.CheckedIndices.Count > 0)
-                list_mods.SetItemChecked(list_mods.CheckedIndices[0], false);
+              list_mods.SetItemChecked(list_mods.CheckedIndices[0], false);
         }
 
         private void open_save(object sender, EventArgs e)
@@ -507,78 +470,40 @@ namespace Hoi4_Launcher
             Application.Exit();
         }
 
-
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-
-            launchSettings items = load_items();
-            List<newModInfo> mods = load_mods_info();
-
-            list_mods2.Items.Clear();
-            foreach (newModInfo mod in mods)
+            List<newModInfo> mods = new load_mods_info();
+            launchSettings items = new load_items();
+            if (textBox2.Text.Length == 0)
             {
-                bool enabled = false;
-                if (items.enabled_mods.Contains(mod.gameRegestryMod)) { enabled = true; }
-                list_mods2.Items.Add(mod.displayName, enabled);
-            }
-
-            if (textBox2.Text.Length > 0)
-            {
-                list_mods2.Visible = true;
-                list_mods.Visible = false;
-                List<string> removals = new List<string>();
-                foreach (string s in list_mods2.Items)
+                list_mods.Items.Clear();
+                foreach (newModInfo mod in mods)
                 {
-                    if (!s.ToUpper().Contains(textBox2.Text.ToUpper()))
-                   
-                        {
+                    bool enabled = false;
+                    if (items.enabled_mods.Contains(mod.gameRegestryMod)) { enabled = true; }
+                    list_mods.Items.Add(mod.displayName, enabled);
+                }
+            }
+            else { 
+                List<string> removals = new List<string>();
+            foreach (string s in list_mods.Items)
+            {
+                if (!s.Contains(textBox2.Text))
+                  {
                         removals.Add(s);
                     }
-
-                }
-                foreach (string s in removals)
-                {
-                    list_mods2.Items.Remove(s);
-                }
-
-
-
+               
             }
-            else {
-                list_mods2.Visible = false;
-                list_mods.Visible = true;
+
+            foreach (string s in removals)
+            {
+                list_mods.Items.Remove(s);
             }
-        }
 
-        private void list_mods_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-        private void list_mods2_SelectedIndexChanged(object sender, EventArgs e)
-        {
             
-        }
-       
 
-        private void list_mods2_ItemCheck_1(object sender, ItemCheckEventArgs e)
-        {
-            bool status=false;
-            if (e.CurrentValue == CheckState.Unchecked)
-            {
-                status = true;
             }
-            else if ((e.CurrentValue == CheckState.Checked))
-            {
-                status = false;
-            }
-            //Logger("Hallo");
-            string curItem = list_mods2.Items[e.Index].ToString();
-            int index = list_mods.FindString(curItem);
-            // If the item was not found in ListBox 2 display a message box, otherwise select it in ListBox2.
-            list_mods.SetItemChecked(index, status);
-          //  list_mods.SetSelected(index, true);
         }
-
     }
 
     internal class Uint32

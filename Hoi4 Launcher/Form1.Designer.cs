@@ -34,12 +34,20 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.list_dlc = new System.Windows.Forms.CheckedListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.list_mods = new System.Windows.Forms.CheckedListBox();
-            this.categoriesBox = new System.Windows.Forms.ComboBox();
+            this.list_mods2 = new System.Windows.Forms.CheckedListBox();
             this.label_category = new System.Windows.Forms.Label();
             this.label_mods = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
+            this.debugsaves = new System.Windows.Forms.NumericUpDown();
+            this.enable_random_log = new System.Windows.Forms.CheckBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.enable_debug = new System.Windows.Forms.CheckBox();
+            this.enable_crashdatalog = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.textBox1 = new System.Windows.Forms.RichTextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -50,6 +58,7 @@
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.debugsaves)).BeginInit();
             this.tabPage5.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -104,8 +113,10 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.textBox2);
+            this.tabPage3.Controls.Add(this.button3);
             this.tabPage3.Controls.Add(this.list_mods);
-            this.tabPage3.Controls.Add(this.categoriesBox);
+            this.tabPage3.Controls.Add(this.list_mods2);
             this.tabPage3.Controls.Add(this.label_category);
             this.tabPage3.Controls.Add(this.label_mods);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -115,39 +126,67 @@
             this.tabPage3.Text = "Mods";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(71, 9);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(309, 20);
+            this.textBox2.TabIndex = 6;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.Color.White;
+            this.button3.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.button3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.button3.Location = new System.Drawing.Point(449, 19);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 5;
+            this.button3.Text = "Unselect All";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.unselect_mods);
+            // 
             // list_mods
             // 
             this.list_mods.CheckOnClick = true;
             this.list_mods.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.list_mods.FormattingEnabled = true;
-            this.list_mods.Location = new System.Drawing.Point(0, 46);
+            this.list_mods.Location = new System.Drawing.Point(0, -303);
             this.list_mods.Name = "list_mods";
             this.list_mods.Size = new System.Drawing.Size(533, 349);
             this.list_mods.Sorted = true;
             this.list_mods.TabIndex = 4;
+            this.list_mods.SelectedIndexChanged += new System.EventHandler(this.list_mods_SelectedIndexChanged);
             // 
-            // categoriesBox
+            // list_mods2
             // 
-            this.categoriesBox.FormattingEnabled = true;
-            this.categoriesBox.Location = new System.Drawing.Point(61, 10);
-            this.categoriesBox.Name = "categoriesBox";
-            this.categoriesBox.Size = new System.Drawing.Size(385, 21);
-            this.categoriesBox.Sorted = true;
-            this.categoriesBox.TabIndex = 3;
+            this.list_mods2.CheckOnClick = true;
+            this.list_mods2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.list_mods2.FormattingEnabled = true;
+            this.list_mods2.Location = new System.Drawing.Point(0, 46);
+            this.list_mods2.Name = "list_mods2";
+            this.list_mods2.Size = new System.Drawing.Size(533, 349);
+            this.list_mods2.Sorted = true;
+            this.list_mods2.TabIndex = 4;
+            this.list_mods2.Visible = false;
+            this.list_mods2.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.list_mods2_ItemCheck_1);
+            this.list_mods2.SelectedIndexChanged += new System.EventHandler(this.list_mods2_SelectedIndexChanged);
             // 
             // label_category
             // 
             this.label_category.AutoSize = true;
             this.label_category.Location = new System.Drawing.Point(3, 12);
             this.label_category.Name = "label_category";
-            this.label_category.Size = new System.Drawing.Size(52, 13);
+            this.label_category.Size = new System.Drawing.Size(44, 13);
             this.label_category.TabIndex = 2;
-            this.label_category.Text = "Category:";
+            this.label_category.Text = "Search:";
             // 
             // label_mods
             // 
             this.label_mods.AutoSize = true;
-            this.label_mods.Location = new System.Drawing.Point(452, 13);
+            this.label_mods.Location = new System.Drawing.Point(452, 6);
             this.label_mods.Name = "label_mods";
             this.label_mods.Size = new System.Drawing.Size(36, 13);
             this.label_mods.TabIndex = 1;
@@ -155,7 +194,13 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.label1);
+            this.tabPage4.Controls.Add(this.debugsaves);
+            this.tabPage4.Controls.Add(this.enable_random_log);
+            this.tabPage4.Controls.Add(this.button5);
+            this.tabPage4.Controls.Add(this.button4);
             this.tabPage4.Controls.Add(this.enable_debug);
+            this.tabPage4.Controls.Add(this.enable_crashdatalog);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
@@ -163,6 +208,62 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Settings";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 81);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(108, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Amount of Autosaves";
+            // 
+            // debugsaves
+            // 
+            this.debugsaves.Location = new System.Drawing.Point(118, 79);
+            this.debugsaves.Name = "debugsaves";
+            this.debugsaves.Size = new System.Drawing.Size(39, 20);
+            this.debugsaves.TabIndex = 10;
+            this.debugsaves.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            // 
+            // enable_random_log
+            // 
+            this.enable_random_log.AutoSize = true;
+            this.enable_random_log.Location = new System.Drawing.Point(7, 53);
+            this.enable_random_log.Name = "enable_random_log";
+            this.enable_random_log.Size = new System.Drawing.Size(123, 17);
+            this.enable_random_log.TabIndex = 9;
+            this.enable_random_log.Text = "Enable Random Log";
+            this.enable_random_log.UseVisualStyleBackColor = true;
+            this.enable_random_log.CheckedChanged += new System.EventHandler(this.enable_random_log_CheckedChanged);
+            // 
+            // button5
+            // 
+            this.button5.BackColor = System.Drawing.Color.White;
+            this.button5.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.button5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.button5.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.button5.Location = new System.Drawing.Point(3, 132);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(124, 23);
+            this.button5.TabIndex = 8;
+            this.button5.Text = "Launch Vanilla";
+            this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.vanilla);
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.White;
+            this.button4.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.button4.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.button4.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.button4.Location = new System.Drawing.Point(3, 103);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(124, 23);
+            this.button4.TabIndex = 6;
+            this.button4.Text = "Open Save Folder";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.open_save);
             // 
             // enable_debug
             // 
@@ -174,6 +275,17 @@
             this.enable_debug.Text = "Enable Debug";
             this.enable_debug.UseVisualStyleBackColor = true;
             this.enable_debug.CheckedChanged += new System.EventHandler(this.enable_debug_CheckedChanged);
+            // 
+            // enable_crashdatalog
+            // 
+            this.enable_crashdatalog.AutoSize = true;
+            this.enable_crashdatalog.Location = new System.Drawing.Point(7, 30);
+            this.enable_crashdatalog.Name = "enable_crashdatalog";
+            this.enable_crashdatalog.Size = new System.Drawing.Size(124, 17);
+            this.enable_crashdatalog.TabIndex = 0;
+            this.enable_crashdatalog.Text = "Enable Crashdatalog";
+            this.enable_crashdatalog.UseVisualStyleBackColor = true;
+            this.enable_crashdatalog.CheckedChanged += new System.EventHandler(this.enable_crashdatalog_CheckedChanged);
             // 
             // tabPage5
             // 
@@ -276,6 +388,7 @@
             this.tabPage3.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.debugsaves)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -291,16 +404,24 @@
         private System.Windows.Forms.Label label_mods;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.Label label_category;
-        private System.Windows.Forms.ComboBox categoriesBox;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.RichTextBox textBox1;
         private System.Windows.Forms.CheckedListBox list_mods;
+        private System.Windows.Forms.CheckedListBox list_mods2;
         private System.Windows.Forms.CheckedListBox list_dlc;
         private System.Windows.Forms.ToolStripStatusLabel label_version;
         private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.CheckBox enable_debug;
+        private System.Windows.Forms.CheckBox enable_crashdatalog;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.CheckBox enable_random_log;
+        private System.Windows.Forms.NumericUpDown debugsaves;
+        private System.Windows.Forms.Label label1;
     }
 }
 
