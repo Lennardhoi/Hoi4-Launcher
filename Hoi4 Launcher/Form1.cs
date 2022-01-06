@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+
+using System.Text;
 using System.IO;
 using System.Linq;
 using System.Timers;
@@ -21,6 +23,9 @@ namespace Hoi4_Launcher
         private static readonly string Hoi4_Enb_Mods = Path.Combine(Hoi4_Doc, "dlc_load.json");
         private static readonly string Hoi4_Mods = Path.Combine(Hoi4_Doc, "mod");
         private static readonly string Hoi4_Saves = Path.Combine(Hoi4_Doc, "save games");
+        private static readonly string sCurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        private static readonly string sFile = Path.Combine(sCurrentDirectory, @"..\..\workshop\content\394360");
+        private static readonly string Workshop = Path.GetFullPath(sFile);
         private static dlcModel[] dis_dlc = null;
         private static int modsCount;
         private bool m_bInitialized;
@@ -482,7 +487,7 @@ namespace Hoi4_Launcher
             if (Global.randomlog > 0)
             {
 
-                args += "--light_random_log";
+                args += "--hotjoinlog";
 
             }
             Process.Start(@"hoi4.exe", args);
@@ -503,8 +508,8 @@ namespace Hoi4_Launcher
         private void vanilla(object sender, EventArgs e)
         {
 
-            Process.Start(@"hoi4.exe", "mod=doesntexist");
-            Application.Exit();
+            Process.Start(@"hoi4.exe", args);
+            //Application.Exit();
         }
 
 
@@ -579,6 +584,32 @@ namespace Hoi4_Launcher
           //  list_mods.SetSelected(index, true);
         }
 
+        private void button6_Click(object sender, EventArgs e)
+        {
+            DirectoryInfo d = new DirectoryInfo(Workshop);
+            DirectoryInfo[] Files = d.GetDirectories();
+            foreach (DirectoryInfo file in Files)
+            {
+                if (int.TryParse(file.Name, out _))
+                {
+                    string descriptorname = "ugc_" + file.Name;
+                    FileInfo[] descriptor = file.GetFiles("*.mod");
+                    if (descriptor.Length > 0)
+                    {
+                        //if (mod.gameRegestryMod == "mod/ugc_1368243403.mod")
+                        //{
+                        //    Debugger.Break();
+                        //}
+                        string[] modFiles = File.ReadAllLines(descriptor[0].FullName);
+                        Array.Resize(ref modFiles, modFiles.Length + 1);
+                        modFiles[modFiles.Length - 1] = modFiles[modFiles.Length - 2];
+                        modFiles[modFiles.Length - 2] = "path=\"" + file.FullName.Replace("\\", "/") + "\"";
+                        File.WriteAllLines(Path.Combine(Hoi4_Mods, descriptorname + ".mod"), modFiles, Encoding.UTF8);
+                    }
+                }
+                
+            }
+        }
     }
 
     internal class Uint32

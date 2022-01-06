@@ -34,6 +34,7 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.list_dlc = new System.Windows.Forms.CheckedListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.button6 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.list_mods = new System.Windows.Forms.CheckedListBox();
@@ -113,6 +114,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.button6);
             this.tabPage3.Controls.Add(this.textBox2);
             this.tabPage3.Controls.Add(this.button3);
             this.tabPage3.Controls.Add(this.list_mods);
@@ -126,9 +128,23 @@
             this.tabPage3.Text = "Mods";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // button6
+            // 
+            this.button6.BackColor = System.Drawing.Color.White;
+            this.button6.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.button6.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.button6.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.button6.Location = new System.Drawing.Point(365, 23);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(90, 23);
+            this.button6.TabIndex = 8;
+            this.button6.Text = "Refresh Mods";
+            this.button6.UseVisualStyleBackColor = false;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(71, 9);
+            this.textBox2.Location = new System.Drawing.Point(53, 12);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(309, 20);
             this.textBox2.TabIndex = 6;
@@ -140,7 +156,7 @@
             this.button3.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.button3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
             this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.button3.Location = new System.Drawing.Point(449, 19);
+            this.button3.Location = new System.Drawing.Point(455, 22);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 5;
@@ -177,7 +193,7 @@
             // label_category
             // 
             this.label_category.AutoSize = true;
-            this.label_category.Location = new System.Drawing.Point(3, 12);
+            this.label_category.Location = new System.Drawing.Point(3, 15);
             this.label_category.Name = "label_category";
             this.label_category.Size = new System.Drawing.Size(44, 13);
             this.label_category.TabIndex = 2;
@@ -186,7 +202,7 @@
             // label_mods
             // 
             this.label_mods.AutoSize = true;
-            this.label_mods.Location = new System.Drawing.Point(452, 6);
+            this.label_mods.Location = new System.Drawing.Point(420, 6);
             this.label_mods.Name = "label_mods";
             this.label_mods.Size = new System.Drawing.Size(36, 13);
             this.label_mods.TabIndex = 1;
@@ -247,7 +263,7 @@
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(124, 23);
             this.button5.TabIndex = 8;
-            this.button5.Text = "Launch Vanilla";
+            this.button5.Text = "Broken";
             this.button5.UseVisualStyleBackColor = false;
             this.button5.Click += new System.EventHandler(this.vanilla);
             // 
@@ -422,6 +438,7 @@
         private System.Windows.Forms.CheckBox enable_random_log;
         private System.Windows.Forms.NumericUpDown debugsaves;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button6;
     }
 }
 
