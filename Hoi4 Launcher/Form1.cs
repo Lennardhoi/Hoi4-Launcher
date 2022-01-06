@@ -616,7 +616,9 @@ namespace Hoi4_Launcher
             {
                 bool enabled = false;
                 if (items.enabled_mods.Contains(mod.gameRegestryMod)) { enabled = true; enabled_mods++; }
-                list_mods.Items.Add(mod.displayName, enabled);
+                if (list_mods.Items.Contains(mod.displayName) == false)
+                { list_mods.Items.Add(mod.displayName, enabled);
+                }
             }
             modsCount = mods.Count;
             updateModsCount(enabled_mods, modsCount);
