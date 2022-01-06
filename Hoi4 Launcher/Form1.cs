@@ -590,7 +590,7 @@ namespace Hoi4_Launcher
             DirectoryInfo[] Files = d.GetDirectories();
             foreach (DirectoryInfo file in Files)
             {
-                if (int.TryParse(file.Name, out _))
+                if (long.TryParse(file.Name, out _))
                 {
                     string descriptorname = "ugc_" + file.Name;
                     FileInfo[] descriptor = file.GetFiles("*.mod");
