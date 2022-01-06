@@ -174,8 +174,9 @@ namespace Hoi4_Launcher
                 if (items.enabled_mods.Contains(mod.gameRegestryMod)) { enabled = true; enabled_mods++; }
                 list_mods.Items.Add(mod.displayName, enabled);
             }
+            modsCount = mods.Count;
+            updateModsCount(enabled_mods, modsCount);
 
-           
             if (items.my_launchersettings != null &&items.my_launchersettings.Count == 4 )
             {
                 List<int> integers = items.my_launchersettings.ConvertAll(s => int.Parse(s));
@@ -207,8 +208,7 @@ namespace Hoi4_Launcher
                 Global.randomlog = 0;
                 Global.debugsaves = 0;
             }
-            modsCount = mods.Count;
-            updateModsCount(enabled_mods, modsCount);
+           
 
             //Load DLC
             foreach (dlcModel dlc in dis_dlc)
@@ -609,6 +609,17 @@ namespace Hoi4_Launcher
                 }
                 
             }
+            launchSettings items = load_items();
+            List<newModInfo> mods = load_mods_info();
+            int enabled_mods = 0;
+            foreach (newModInfo mod in mods)
+            {
+                bool enabled = false;
+                if (items.enabled_mods.Contains(mod.gameRegestryMod)) { enabled = true; enabled_mods++; }
+                list_mods.Items.Add(mod.displayName, enabled);
+            }
+            modsCount = mods.Count;
+            updateModsCount(enabled_mods, modsCount);
         }
     }
 
