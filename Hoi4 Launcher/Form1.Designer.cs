@@ -55,6 +55,7 @@
             this.label_version = new System.Windows.Forms.ToolStripStatusLabel();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -210,6 +211,7 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.button7);
             this.tabPage4.Controls.Add(this.label1);
             this.tabPage4.Controls.Add(this.debugsaves);
             this.tabPage4.Controls.Add(this.enable_random_log);
@@ -263,7 +265,7 @@
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(124, 23);
             this.button5.TabIndex = 8;
-            this.button5.Text = "Broken";
+            this.button5.Text = "Delete missing Mods";
             this.button5.UseVisualStyleBackColor = false;
             this.button5.Click += new System.EventHandler(this.vanilla);
             // 
@@ -381,6 +383,20 @@
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_click);
             // 
+            // button7
+            // 
+            this.button7.BackColor = System.Drawing.Color.White;
+            this.button7.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.button7.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.button7.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.button7.Location = new System.Drawing.Point(3, 161);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(124, 23);
+            this.button7.TabIndex = 12;
+            this.button7.Text = "Launch Vanilla";
+            this.button7.UseVisualStyleBackColor = false;
+            this.button7.Click += new System.EventHandler(this.launch_vanilla);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -439,6 +455,7 @@
         private System.Windows.Forms.NumericUpDown debugsaves;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
     }
 }
 

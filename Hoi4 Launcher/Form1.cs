@@ -393,26 +393,27 @@ namespace Hoi4_Launcher
         
         private void enable_debug_CheckedChanged(object sender, EventArgs e)
         {
-            if (Global.debug == 1)
+           
+            if (((CheckBox)sender).Checked == true)
             {
-                Global.debug = 0;
+                Global.debug = 1;
             }
             else
             {
-                Global.debug = 1;
+                Global.debug = 0;
             }
         }
 
         
         private void enable_crashdatalog_CheckedChanged(object sender, EventArgs e)
         {
-            if (Global.crashdata ==1)
+            if (((CheckBox)sender).Checked == true)
             {
-                Global.crashdata = 0;
+                Global.crashdata = 1;
             }
             else
             {
-                Global.crashdata = 1;
+                Global.crashdata = 0;
             }
 
         }
@@ -425,13 +426,13 @@ namespace Hoi4_Launcher
 
         private void enable_random_log_CheckedChanged(object sender, EventArgs e)
         {
-            if (Global.randomlog == 1)
+            if (((CheckBox)sender).Checked == true)
             {
-                Global.randomlog = 0;
+                Global.randomlog = 1;
             }
             else
             {
-                Global.randomlog = 1;
+                Global.randomlog = 0;
             }
         }
         private void button2_click(object sender, EventArgs e)
@@ -508,10 +509,20 @@ namespace Hoi4_Launcher
         private void vanilla(object sender, EventArgs e)
         {
 
-            Process.Start(@"hoi4.exe", args);
-            //Application.Exit();
+            List<newModInfo> mods = new List<newModInfo>();
+            DirectoryInfo d = new DirectoryInfo(Hoi4_Mods);
+            DirectoryInfo c = new DirectoryInfo(Workshop);
+            DirectoryInfo[] Folders = c.GetDirectories();
+            FileInfo[] Files = d.GetFiles("*ugc");
+            foreach (FileInfo file in Files)
+            {
+                if (Folders.Any(r => r.FullName.Equals(file.FullName.Replace("ugc_","")))==false)
+                {
+                    File.Delete(file.FullName);
+                }
+            }
         }
-
+        
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
@@ -622,6 +633,21 @@ namespace Hoi4_Launcher
             }
             modsCount = mods.Count;
             updateModsCount(enabled_mods, modsCount);
+        }
+
+        private void launch_vanilla(object sender, EventArgs e)
+        {
+            List<string> enabled_mods = new List<string>();
+            List<string> disabled_dlc = new List<string>();
+            launchSettings config = load_items();
+            config.enabled_mods = enabled_mods;
+            config.disabled_dlcs = disabled_dlc;
+            var numbers2 = new List<int>() { Global.debug, Global.crashdata, Global.randomlog, Global.debugsaves };
+            List<string> l2 = numbers2.ConvertAll<string>(delegate (int i) { return i.ToString(); });
+            List<int> myStringList = l2.Select(s => int.Parse(s)).ToList();
+            config.my_launchersettings = l2;
+            SerializeConfig(config);
+            Process.Start(@"hoi4.exe");
         }
     }
 
