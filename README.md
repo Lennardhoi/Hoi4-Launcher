@@ -5,7 +5,7 @@
 
 ![alt text](https://i.gyazo.com/31d4ee4b92d39d1115813e0fa098b9d2.jpg)
 
-![alt text](https://i.gyazo.com/7a27e92df7e7b1f34d143606b560a2c7.png)
+![alt text](https://i.gyazo.com/4ffd183eba16c05609abd298ca1eb22c.png)
 
 USAGE
 ------
