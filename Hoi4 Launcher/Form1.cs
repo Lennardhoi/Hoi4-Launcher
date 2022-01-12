@@ -376,7 +376,7 @@ namespace Hoi4_Launcher
                             if (unItemState > 7 && unItemState < 16)
                             {
                                 Logger(mod.remote_fileid + "update is needed" + unItemState);
-                                //bool ret = SteamUGC.DownloadItem(r, true);
+                                _ = SteamUGC.DownloadItem(r, true);
                             }
                             else if (unItemState < 7)
                             {
