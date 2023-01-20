@@ -17,4 +17,3 @@ USAGE
 Virus scanner might flag it. Add an exemption, or compile it yourself with the available source code but dont message me about it.
 ![alt text](https://i.gyazo.com/14a7e0a104e60bc905376786c4619c31.png)
 
-Based on Xfernos launcher but heavily modified.
