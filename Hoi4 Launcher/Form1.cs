@@ -13,6 +13,7 @@ using System.Linq;
 using System.Timers;
 using System.Windows.Forms;
 using Timer = System.Timers.Timer;
+using System.Threading;
 namespace Hoi4_Launcher
 {
     
@@ -23,7 +24,7 @@ namespace Hoi4_Launcher
         private static readonly string Hoi4_Enb_Mods = Path.Combine(Hoi4_Doc, "dlc_load.json");
         private static readonly string Hoi4_Mods = Path.Combine(Hoi4_Doc, "mod");
         private static readonly string Hoi4_Saves = Path.Combine(Hoi4_Doc, "save games");
-        private static readonly string sCurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        private static readonly string sCurrentDirectory = Directory.GetCurrentDirectory();
         private static readonly string sFile = Path.Combine(sCurrentDirectory, @"..\..\workshop\content\394360");
         private static readonly string Workshop = Path.GetFullPath(sFile);
         private static dlcModel[] dis_dlc = null;
@@ -32,11 +33,15 @@ namespace Hoi4_Launcher
         protected Callback<DownloadItemResult_t> m_DownloadItemResult;
         private static LHSettings gameSettings = new LHSettings();
         private string args;
+
+        private static int _nakama = 0;
         private readonly Timer updateUI = new Timer(100);
         private static readonly launchSettings data = new launchSettings();
 
         static class Global
         {
+
+            public static bool updateComplete = false;
             private static int _crashdata = 0;
             private static int _debug = 0;
             private static int _binary = 0;
@@ -50,6 +55,11 @@ namespace Hoi4_Launcher
             {
                 get { return _binary; }
                 set { _binary = value; }
+            }
+            public static int nakama
+            {
+                get { return _nakama; }
+                set { _nakama = value; }
             }
             public static int debugsaves
             {
@@ -79,6 +89,34 @@ namespace Hoi4_Launcher
             obj = JsonConvert.DeserializeObject<launchSettings>(data);
             return obj;
         }
+        static void UpdateWorkshopContent(ulong workshopItemId, string contentPath)
+        {
+            Global.updateComplete = false;
+            AppId_t AppID = new AppId_t(394360);
+            var handle = SteamUGC.StartItemUpdate(AppID, new PublishedFileId_t(workshopItemId));
+
+            // Set only the content path
+            SteamUGC.SetItemContent(handle, contentPath);
+
+            Console.WriteLine("Starting content update...");
+            SteamAPICall_t updateCall = SteamUGC.SubmitItemUpdate(handle, "Updated content only");
+            CallResult<SubmitItemUpdateResult_t> callResult = new CallResult<SubmitItemUpdateResult_t>();
+            callResult.Set(updateCall, OnContentUpdated);
+        }
+
+        static void OnContentUpdated(SubmitItemUpdateResult_t callback, bool ioFailure)
+        {
+            if (ioFailure || callback.m_eResult != EResult.k_EResultOK)
+            {
+                MessageBox.Show("Failed to update the workshop item. Check the log for details.", "Update Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                MessageBox.Show("Workshop item updated successfully!", "Update Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            Global.updateComplete = true;
+        }
+
 
         public List<newModInfo> load_mods_info()
         {
@@ -158,7 +196,10 @@ namespace Hoi4_Launcher
         {
             //Load Mods
             m_bInitialized = SteamAPI.Init();
-            SteamUGC.StopPlaytimeTrackingForAllItems();
+#if DEBUG
+            Directory.SetCurrentDirectory(Path.GetFullPath(@"G:\SteamLibrary\steamapps\common\Hearts of Iron IV"));
+#endif
+            //SteamUGC.StopPlaytimeTrackingForAllItems();
             if (!m_bInitialized)
             {
                 Logger("[Steamworks.NET] SteamAPI_Init() failed. Refer to Valve's documentation or the comment above this line for more information." + this);
@@ -177,13 +218,18 @@ namespace Hoi4_Launcher
             modsCount = mods.Count;
             updateModsCount(enabled_mods, modsCount);
 
-            if (items.my_launchersettings != null &&items.my_launchersettings.Count == 4 )
+            if (items.my_launchersettings != null &&items.my_launchersettings.Count == 5 )
             {
                 List<int> integers = items.my_launchersettings.ConvertAll(s => int.Parse(s));
                 Global.debug = integers[0];
                 Global.crashdata = integers[1];
                 Global.randomlog = integers[2];
                 Global.debugsaves = integers[3];
+                Global.nakama = integers[4];
+                if (Global.nakama == 1)
+                {
+                    nakama.Checked = true;
+                }
                 if (Global.debug ==1)
                 {
                     enable_debug.Checked = true;
@@ -207,6 +253,7 @@ namespace Hoi4_Launcher
                 Global.crashdata = 0;
                 Global.randomlog = 0;
                 Global.debugsaves = 0;
+                Global.nakama = 0;
             }
            
 
@@ -240,28 +287,35 @@ namespace Hoi4_Launcher
             List<dlcModel> dlcs = new List<dlcModel>();
             foreach (string dir in Directory.GetDirectories(path))
             {
-                try
+                // try
+                // {
+                DirectoryInfo dInfo = new DirectoryInfo(dir);
+                if (dInfo.GetFilesByExtensions(".dlc").Count() > 0)
                 {
-                    DirectoryInfo dInfo = new DirectoryInfo(dir);
                     string dlcFullPath = dInfo.GetFilesByExtensions(".dlc").First().FullName;
                     dlcModel dlc = new dlcModel();
                     IEnumerable<string> x = File.ReadLines(dlcFullPath);
                     dlc.name = x.First().Split('"')[1].Replace('"', ' ');
-                    dlc.path = x.ElementAt(1).Split('"')[1].Replace('"', ' ').Split('.').First() + ".dlc";
+                    // string test2 = x.ElementAt(1);
+                    // if (test2.Contains('"'))
+                    // { x.ElementAt(1).Replace("= dlc", "= \"dlc"); }
+                    dlc.path = dlcFullPath.Replace("Hearts of Iron IV", "~").Split('~')[1].Replace('\\', '/').Substring(1);
+                    // dlc.path = "dlc/"+x.ElementAt(1).Replace("= dlc", "= \"dlc").Split('"')[1].Split('/')[1] + ".dlc";
                     string party = x.ElementAt(x.Count() - 2).Split('=')[1].Replace(" ", "");
                     if (party == "yes")
                     { dlc._3rdparty = true; button2.BackgroundImage = Properties.Resources.play3rd; }
                     else { dlc._3rdparty = false; button2.BackgroundImage = Properties.Resources.play; }
                     dlcs.Add(dlc);
                 }
-                catch (Exception)
-                {
-                }
+                //  }
+                // catch (Exception)
+                //  {
+                //  }
             }
             return dlcs.ToArray();
         }
 
-       
+
 
 
         private string removeBrackets(string text, string from, string to, bool tolast = true)
@@ -293,7 +347,6 @@ namespace Hoi4_Launcher
 
             DoubleBuffered = true;
             Utility.Utility.enableDoubleBuff(tabControl1);
-            Utility.Utility.enableDoubleBuff(tabPage1);
             dis_dlc = GetDLCs();
             load();
             updateUI.Elapsed += updateUI_DoWork;
@@ -463,7 +516,7 @@ namespace Hoi4_Launcher
             launchSettings config = load_items();
             config.enabled_mods = enabled_mods;
             config.disabled_dlcs = disabled_dlc;
-            var numbers2 = new List<int>() { Global.debug, Global.crashdata, Global.randomlog,Global.debugsaves };
+            var numbers2 = new List<int>() { Global.debug, Global.crashdata, Global.randomlog,Global.debugsaves,Global.nakama };
             List<string> l2 = numbers2.ConvertAll<string>(delegate(int i) { return i.ToString(); });
             List<int> myStringList = l2.Select(s => int.Parse(s)).ToList();
             config.my_launchersettings = l2;
@@ -489,6 +542,12 @@ namespace Hoi4_Launcher
             {
 
                 args += "--hotjoinlog";
+
+            }
+            if (Global.nakama == 1)
+            {
+
+                args += " --nakama";
 
             }
             Process.Start(@"hoi4.exe", args);
@@ -648,6 +707,31 @@ namespace Hoi4_Launcher
             config.my_launchersettings = l2;
             SerializeConfig(config);
             Process.Start(@"hoi4.exe");
+        }
+
+        private void updateworkshopbutton_Click(object sender, EventArgs e)
+        {
+            List<newModInfo> mods = load_mods_info();
+            newModInfo mod = mods.Find(x => x.displayName == list_mods.CheckedItems[0].ToString());
+
+            UpdateWorkshopContent(ulong.Parse(mod.remote_fileid), mod.modfolder);
+            while (!Global.updateComplete)
+            {
+                SteamAPI.RunCallbacks();
+                Thread.Sleep(1000);
+            }
+        }
+
+        private void nakama_CheckedChanged(object sender, EventArgs e)
+        {
+            if (((CheckBox)sender).Checked == true)
+            {
+                Global.nakama = 1;
+            }
+            else
+            {
+                Global.nakama = 0;
+            }
         }
     }
 
