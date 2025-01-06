@@ -36,6 +36,7 @@
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.textBox1 = new System.Windows.Forms.RichTextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.nakama = new System.Windows.Forms.CheckBox();
             this.updateworkshopbutton = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -56,7 +57,6 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.list_dlc = new System.Windows.Forms.CheckedListBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.nakama = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -170,6 +170,18 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Settings";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // nakama
+            // 
+            this.nakama.AutoSize = true;
+            this.nakama.Location = new System.Drawing.Point(9, 14);
+            this.nakama.Margin = new System.Windows.Forms.Padding(4);
+            this.nakama.Name = "nakama";
+            this.nakama.Size = new System.Drawing.Size(127, 20);
+            this.nakama.TabIndex = 40;
+            this.nakama.Text = "Enable Nakama";
+            this.nakama.UseVisualStyleBackColor = true;
+            this.nakama.CheckedChanged += new System.EventHandler(this.nakama_CheckedChanged);
             // 
             // updateworkshopbutton
             // 
@@ -426,18 +438,6 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(721, 518);
             this.tabControl1.TabIndex = 1;
-            // 
-            // nakama
-            // 
-            this.nakama.AutoSize = true;
-            this.nakama.Location = new System.Drawing.Point(9, 14);
-            this.nakama.Margin = new System.Windows.Forms.Padding(4);
-            this.nakama.Name = "nakama";
-            this.nakama.Size = new System.Drawing.Size(127, 20);
-            this.nakama.TabIndex = 40;
-            this.nakama.Text = "Enable Nakama";
-            this.nakama.UseVisualStyleBackColor = true;
-            this.nakama.CheckedChanged += new System.EventHandler(this.nakama_CheckedChanged);
             // 
             // Form1
             // 
