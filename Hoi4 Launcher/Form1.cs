@@ -94,7 +94,7 @@ namespace Hoi4_Launcher
             Global.updateComplete = false;
             AppId_t AppID = new AppId_t(394360);
             var handle = SteamUGC.StartItemUpdate(AppID, new PublishedFileId_t(workshopItemId));
-            MessageBox.Show(workshopItemId.ToString()+ " "+ contentPath);
+            MessageBox.Show("WorshopItemID: "+workshopItemId.ToString()+ "\nPath: "+ contentPath+ "\nStarting Update Now");
             // Set only the content path
             SteamUGC.SetItemContent(handle, contentPath);
             
