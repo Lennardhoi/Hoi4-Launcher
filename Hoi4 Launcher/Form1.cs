@@ -94,10 +94,10 @@ namespace Hoi4_Launcher
             Global.updateComplete = false;
             AppId_t AppID = new AppId_t(394360);
             var handle = SteamUGC.StartItemUpdate(AppID, new PublishedFileId_t(workshopItemId));
-
+            MessageBox.Show(workshopItemId.ToString()+ " "+ contentPath);
             // Set only the content path
             SteamUGC.SetItemContent(handle, contentPath);
-
+            
             Console.WriteLine("Starting content update...");
             SteamAPICall_t updateCall = SteamUGC.SubmitItemUpdate(handle, "Updated content only");
             CallResult<SubmitItemUpdateResult_t> callResult = new CallResult<SubmitItemUpdateResult_t>();
@@ -122,6 +122,7 @@ namespace Hoi4_Launcher
         {
             string[] stringSeparators = new string[] { "\n\t" };
             List<newModInfo> mods = new List<newModInfo>();
+            Logger(Hoi4_Mods);
             DirectoryInfo d = new DirectoryInfo(Hoi4_Mods);
             FileInfo[] Files = d.GetFiles("*.mod");
             foreach (FileInfo file in Files)
@@ -158,6 +159,10 @@ namespace Hoi4_Launcher
                     if (modFile.Contains("remote_file_id="))
                     {
                         mod.remote_fileid = modFile.Split('=')[1].Replace("\"", "");
+                    }
+                    if (modFile.Contains("path="))
+                    {
+                        mod.modfolder = modFile.Split('=')[1].Replace("\"", "");
                     }
                     if (modFile.Contains("tags={"))
                     {
@@ -713,7 +718,8 @@ namespace Hoi4_Launcher
         {
             List<newModInfo> mods = load_mods_info();
             newModInfo mod = mods.Find(x => x.displayName == list_mods.CheckedItems[0].ToString());
-
+            Logger(mod.remote_fileid);
+            Logger(mod.modfolder);
             UpdateWorkshopContent(ulong.Parse(mod.remote_fileid), mod.modfolder);
             while (!Global.updateComplete)
             {
